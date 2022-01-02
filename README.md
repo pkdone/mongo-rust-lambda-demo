@@ -133,7 +133,7 @@ cargo fmt -- --check
 
 ## Lambda Rust Code Description
 
-This project contains a single Rust source file:&nbsp; [main.rs](main.rs)
+This project contains a single Rust source file:&nbsp; [main.rs](src/main.rs)
 
 Notes about the Rust code:
 
