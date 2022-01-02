@@ -13,7 +13,7 @@ For a description of what the example Rust Lambda code does, see section [Lambda
 
 ### Prerequisites
 
- 1. Ensure you have an __accessible remote MongoDB cluster__ ([self-managed](https://docs.mongodb.com/manual/installation/) or hosted in the [Atlas](https://www.mongodb.com/cloud/) DBaaS - which can be leveraging the [free tier](https://docs.atlas.mongodb.com/tutorial/deploy-free-tier-cluster/)) which is network accessible from your client workstation. 
+ 1. Ensure you have an __accessible remote MongoDB cluster__ ([self-managed](https://docs.mongodb.com/manual/installation/) or hosted in the [Atlas](https://www.mongodb.com/cloud/) DBaaS - which can be the [free tier](https://docs.atlas.mongodb.com/tutorial/deploy-free-tier-cluster/)) which is network accessible from your client workstation. 
 
  2. Ensure the MongoDB cluster you are connecting to has a database user available with at least __write privileges__ to the database called `test. If you are using an __Atlas hosted MongoDB database__, you will additionally need to follow the steps in section _Restrict network access to your Atlas cluster_ of the [best practices](https://docs.atlas.mongodb.com/best-practices-connecting-from-aws-lambda/) to enable your subsequently deployed Lambda function __to be able to access the database__.
 
