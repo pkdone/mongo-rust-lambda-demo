@@ -69,7 +69,7 @@ aws lambda invoke --function-name mongo-rust-lambda-demo \
   output.json && cat output.json
 ```
 
-&nbsp;&nbsp;&nbsp;&nbsp;_NOTE 1_: The response from the Rust executable includes a `invocation_count` field which shows how many times the instance of the Lambda has been invoked (there could be more than one instance when under load). If you run the test command repeatedly in a short space of time, you should see this number increment each time. Suppose you wait more than roughly 15 minutes before invoking the test again. In that case, you will likely see the count reset to _one_ because the AWS Lambda runtime will have destroyed the existing Lambda instance, having been idle, and will have instantiated a new instance upon receiving this later request.
+&nbsp;&nbsp;&nbsp;&nbsp;_NOTE 1_: The response from the Rust executable includes an `invocation_count` field which shows how many times the instance of the Lambda has been invoked (there could be more than one instance when under load). If you run the test command repeatedly in a short space of time, you should see this number increment each time. Suppose you wait more than roughly 15 minutes before invoking the test again. In that case, you will likely see the count reset to _one_ because the AWS Lambda runtime will have destroyed the existing Lambda instance, having been idle, and will have instantiated a new instance upon receiving this later request.
 
 &nbsp;&nbsp;&nbsp;&nbsp;_NOTE 2_: In [real-world environments](https://docs.aws.amazon.com/lambda/latest/dg/lambda-invocation.html), you wouldn't be using the AWS CLI to invoke your Lambda function, and instead, you might be triggering it synchronously via an HTTP API endpoint or asynchronously via an AWS S3 or SNS event for example.
 
