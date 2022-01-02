@@ -23,7 +23,7 @@ For a description of what the example Rust Lambda code does, see section [Lambda
     aws lambda list-functions
     ```
 
- 4. Install the latest version of the [Rust development environment](https://www.rust-lang.org/tools/install), if it isn't already installed, via the __rustup__ utility, including the _rustc_ compiler & the _cargo_ package/build manager. _NOTE:_ If building on Microsoft Windows, first ensure you have Microsoft's [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/) installed (and importantly, when running Microsoft's _build tools_ installer, choose the _C++ build tools_ option). Run the following command from a terminal to install Rust toolchain for the target OS environment the Lambda will execute in (i.e. x86-64 Linux):
+ 4. Install the latest version of the [Rust development environment](https://www.rust-lang.org/tools/install), if it isn't already installed. _NOTE:_ If building on Microsoft Windows, first ensure you have Microsoft's [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/) installed (and importantly, when running Microsoft's _build tools_ installer, choose the _C++ build tools_ option). Run the following command from a terminal to install Rust toolchain for the target OS environment the Lambda will execute in (i.e. x86-64 Linux):
 
     ```console
     rustup target add x86_64-unknown-linux-gnu
