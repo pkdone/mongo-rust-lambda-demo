@@ -6,7 +6,7 @@ AWS provides [specific language Lambda runtimes](https://docs.aws.amazon.com/lam
 
 AWS provides a [documented example for deploying a generic Rust Lambda](https://docs.aws.amazon.com/sdk-for-rust/latest/dg/lambda.html). The project here serves a more specific purpose of giving an example for creating and deploying a Rust Lambda to interact with a MongoDB database. Furthermore, whether developing a Lambda to interact with a MongoDB database in Rust or any other programming language, you should ensure you follow [MongoDB's Best Practices Connecting from AWS Lambda](https://docs.atlas.mongodb.com/best-practices-connecting-from-aws-lambda/).
 
-For a description of what the example Rust Lambda code does, see section [Lambda Rust Code Description](TODO) at the base of this page.
+For a description of what the example Rust Lambda code does, see section [Lambda Rust Code Description](#lambda-rust-code-description) at the base of this page.
 
 
 ## How To Deploy, Test And Monitor
@@ -133,7 +133,7 @@ cargo fmt -- --check
 
 ## Lambda Rust Code Description
 
-This project contains a single Rust source file:&nbsp; [main.rs](TODO)
+This project contains a single Rust source file:&nbsp; [main.rs](blob/main/src/main.rs)
 
 Notes about the Rust code:
 
