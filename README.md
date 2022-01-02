@@ -17,7 +17,7 @@ For a description of what the example Rust Lambda code does, see section [Lambda
 
  2. Ensure the MongoDB cluster you are connecting to has a database user available with at least __write privileges__ to the database called `test. If you are using an __Atlas hosted MongoDB database__, you will additionally need to follow the steps in section _Restrict network access to your Atlas cluster_ of the [best practices](https://docs.atlas.mongodb.com/best-practices-connecting-from-aws-lambda/) to enable your subsequently deployed Lambda function __to be able to access the database__.
 
- 3. Install the [AWS Command Line Interface (AWS CLI)](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) (version 2) including the [prerequisites](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-prereqs.html) and then test you have configured the AWS CLI correctly on your workstation by attempting to run the following command from a terminal to list the currently deployed AWS Lambdas in your AWS account region (there may be none):
+ 3. Install the [AWS Command Line Interface (AWS CLI)](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) (version 2) including the [prerequisites](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-prereqs.html) and then test you have configured the AWS CLI correctly on your workstation by attempting to run the following command from a terminal to list the currently deployed AWS Lambda functions in your AWS account region (there may be none):
 
     ```console
     aws lambda list-functions
