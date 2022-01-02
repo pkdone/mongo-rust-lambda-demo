@@ -31,9 +31,9 @@ For a description of what the example Rust Lambda code does, see section [Lambda
 
  5. Via the AWS console for your AWS account, [create a new lambda execution IAM role](https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html#permissions-executionrole-console) in the [IAM section of the console](https://console.aws.amazon.com/iam/home#/roles) using the following steps:
     * Choose _Create role_ and under _Common use cases_, choose _Lambda_.
-    * Choose _Next: Permissions_ and under _Under Attach permissions policies_, choose the _AWS managed policies_ __AWSLambdaBasicExecutionRole__ and __AWSXRayDaemonWriteAccess__.
+    * Choose _Next: Permissions_ and under _Attach permissions policies_, choose the _AWS managed policies_ __AWSLambdaBasicExecutionRole__ and __AWSXRayDaemonWriteAccess__.
     * Choose _Next: Tags_, choose _Next: Review_ and for _Role name_, enter a new role name with any value, e.g. "jdoe-lambda-role".
-    * Choose Create role and once created __make a copy the ARN for the role__ for use later.
+    * Choose _Create role_ and once created __make a copy the ARN for the role__ for use later.
 
 ### Executable Compilation
 
