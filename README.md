@@ -73,7 +73,7 @@ aws lambda invoke --function-name mongo-rust-lambda-demo \
 
 &nbsp;&nbsp;&nbsp;&nbsp;_NOTE 2_: In [real-world environments](https://docs.aws.amazon.com/lambda/latest/dg/lambda-invocation.html), you wouldn't be using the AWS CLI to invoke your Lambda function, and instead, you might be triggering it synchronously via an HTTP API endpoint or asynchronously via an AWS S3 or SNS event for example.
 
- 2. Use the [MongoDB Shell](https://docs.mongodb.com/mongodb-shell/) (`mongosh`) to inspect the document inserted each time the Lambda function was invoked with the previous command by running the following (first change the __MongoDB URL__ argument to match the URL of your own MongoDB environment including database username and password):
+ 2. Use the [MongoDB Shell](https://docs.mongodb.com/mongodb-shell/) (`mongosh`) to inspect the document inserted each time the Lambda function was invoked with the previous command by running the following (first change the __MongoDB URL__ argument to match the URL of your own MongoDB database including username and password):
 
 ```console
 mongosh "mongodb+srv://myuser:mypassword@mycluster.a123z.mongodb.net/"
