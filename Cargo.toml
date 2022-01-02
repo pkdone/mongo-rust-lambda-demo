@@ -1,0 +1,17 @@
+[package]
+name = "mongo-rust-lambda-demo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bson = "2.1.*"
+env_logger = "0.9.*"
+lambda_runtime = "0.4.*"
+lazy_static = "1.4.*"
+log = "0.4.*"
+mongodb = "2.1.*"
+once_cell = "1.9.*"
+regex = "1.5.*"
+serde = {version = "1.0.*", features = ["derive"]}
+serde_json = "1.0.*"
+tokio = {version = "1.4.*", features = ["full"]}
