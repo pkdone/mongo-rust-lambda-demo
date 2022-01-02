@@ -46,7 +46,7 @@ rm -f mongo-rust-lambda-demo.zip && cp ./target/x86_64-unknown-linux-gnu/release
 
 ### Deployment
 
- * Run the following AWS CLI command to deploy the Lambda zipped executable, first changing the values of the argument for `--role` to match the __role ARN__ you copied in the Prerequisites, and the __MongoDB URL__ part of the`-environment` argument to match the URL of your own MongoDB environment including database username and password (i.e. replace `mongodb+srv://myuser:mypassword@mycluster.a123z.mongodb.net/`):
+ * Run the following AWS CLI command to deploy the Lambda zipped executable, first changing the values of the argument for `--role` to match the __role ARN__ you copied in the Prerequisites, and the __MongoDB URL__ part of the`-environment` argument to match the URL of your own MongoDB database including username and password (i.e. replace `mongodb+srv://myuser:mypassword@mycluster.a123z.mongodb.net/`):
 
 ```console
 aws lambda create-function --function-name mongo-rust-lambda-demo \
