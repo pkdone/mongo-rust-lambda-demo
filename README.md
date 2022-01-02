@@ -37,7 +37,7 @@ For a description of what the example Rust Lambda code does, see section [Lambda
 
 ### Executable Compilation
 
- * From a terminal, in this Github project's root folder, run Rust's _cargo_ commands to __1)__ build the project's executable for the target environment, and __2)__ rename the executable to `bootstrap` and bundled into a zip file ready for deployment (as required by AWS Lambda):
+ * From a terminal, in this Github project's root folder, run commands to __1)__ build the project's executable for the target environment, and __2)__ rename the executable to `bootstrap` and bundled into a zip file ready for deployment (as required by AWS Lambda):
 
 ```console
 cargo build --release --target x86_64-unknown-linux-gnu
