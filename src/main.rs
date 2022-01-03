@@ -41,7 +41,7 @@ pub struct DBLogRecord {
     pub execution_deadline_millis: Option<u64>,
 }
 
-// Main bootstrap function to setup the lambda
+// Main bootstrap function to setup the lambda function
 //
 #[tokio::main]
 async fn main() -> Result<(), LambdaError> {
@@ -54,62 +54,42 @@ async fn main() -> Result<(), LambdaError> {
     Ok(())
 }
 
-// Handler function executed each time the lambda is invoked
+// Handler function executed each time the lambda function is invoked
 //
 async fn handler(event: Value, context: Context) -> Result<Value, LambdaError> {
-    let mongodb_url = match get_mongodb_url_from_env_var() {
-        Ok(value) => value,
-        Err(e) => {
-            error!("Internal error occurred in the lambda: {}", e);
-            return Err("An internal error occurred".into());
-        }
-    };
+    let message = event["message"].as_str().unwrap_or("Missing input payload message");
 
-    let message = event["message"].as_str().unwrap_or("<missing input payload message>");
-    info!(
-        "Lambda executing request against MongoDB deployment: '{}'",
-        redact_mongodb_url(&mongodb_url)
-    );
-    let result = process_work(
-        &mongodb_url,
-        message,
-        &context.request_id,
-        context.env_config.memory,
-        context.deadline,
-    )
-    .await;
+    let result =
+        process_work(message, &context.request_id, context.env_config.memory, context.deadline)
+            .await;
 
     match result {
         Ok(value) => Ok(value),
         Err(e) => {
-            error!("Internal error occurred in the lambda: {}", e);
+            error!("Internal error occurred in the lambda function: {}", e);
             Err("An internal error occurred".into())
         }
     }
 }
 
-// Core execution work of the lambda, separated from handler wrapper function to be easily
+// Core execution work of the lambda function, separated from handler wrapper function to be easily
 // invocable via integration tests at the base of this source code file
 //
 async fn process_work(
-    mongodb_url: &str, message: &str, request_id: &str, memory: i32, deadline: u64,
+    message: &str, request_id: &str, memory: i32, deadline: u64,
 ) -> Result<Value, Box<dyn Error + Send + Sync>> {
+    let mongodb_url = get_mongodb_url_from_env_var()?;
     let mongodb_client = get_mongodb_client().await?;
+    info!(
+        "Lambda function executing request against MongoDB deployment: '{}'",
+        redact_mongodb_url(&mongodb_url)
+    );
+
     let invocation_count = increment_count_and_fetch();
     let cpu_cores = run_os_cmd("nproc", &["--all"])?.parse::<i32>()?;
     let coll = mongodb_client.database(DBNAME).collection(COLLNAME);
-
-    if let Err(e) =
-        db_insert_record(&coll, invocation_count, message, request_id, cpu_cores, memory, deadline)
-            .await
-    {
-        error!(
-            "Error interacting with MongoDB on URL '{}'. Error detail: {}",
-            redact_mongodb_url(mongodb_url),
-            e
-        );
-        return Err(e);
-    }
+    db_insert_record(&coll, invocation_count, message, request_id, cpu_cores, memory, deadline)
+        .await?;
 
     Ok(json!(
         {
@@ -150,7 +130,7 @@ fn increment_count_and_fetch() -> usize {
 // Get the already cached mongodb client
 //
 async fn get_mongodb_client() -> Result<&'static Client, Box<dyn Error + Send + Sync>> {
-    MONGODB_CLIENT.get().ok_or_else(|| "Unable to access data".into())
+    MONGODB_CLIENT.get().ok_or_else(|| "MongoDB client as static reference".into())
 }
 
 // Cache a new mongodb client
@@ -160,13 +140,17 @@ async fn create_mongodb_client(mongodb_url: &str) -> Result<(), Box<dyn Error + 
     debug!("Client connection: {:#?}", client_result);
 
     match client_result {
-        Ok(client) => {
-            MONGODB_CLIENT.set(client).unwrap();
-            Ok(())
-        }
+        Ok(client) => match MONGODB_CLIENT.set(client) {
+            Ok(()) => Ok(()),
+            Err(_) => {
+                const ERRMSG: &str = "Error saving MongoDB client in a static reference";
+                error!("{}", ERRMSG);
+                Err(ERRMSG.into())
+            }
+        },
         Err(e) => {
             error!(
-                "Error trying to get MongoDB Connection to URL '{}'. Error detail: {}",
+                "Error trying to get a MongoDB connection to the URL '{}'. Error detail: {}",
                 redact_mongodb_url(mongodb_url),
                 e
             );
@@ -182,7 +166,7 @@ fn get_mongodb_url_from_env_var() -> Result<String, Box<dyn Error + Send + Sync>
         Ok(val) => Ok(val),
         Err(e) => {
             error!(
-                "Unable to run lambda because env var not located: '{}' - err: {}",
+                "Unable to run lambda function because env var not located: '{}' - err: {}",
                 MONGODB_URL_VAR, e
             );
             Err("Internal error - lambda function didn't initialize properly".into())
@@ -196,7 +180,8 @@ fn get_mongodb_url_from_env_var() -> Result<String, Box<dyn Error + Send + Sync>
 fn redact_mongodb_url(mongodb_url: &str) -> Cow<str> {
     lazy_static! {
         static ref MONGODB_URL_PATTERN: Regex =
-            Regex::new(r"(?P<prefix>mongodb(\+srv)?://)(.+):(.+)(?P<suffix>@.+)").unwrap();
+            Regex::new(r"(?P<prefix>mongodb(\+srv)?://)(.+):(.+)(?P<suffix>@.+)")
+                .expect("Expected constructed regex");
     }
 
     MONGODB_URL_PATTERN.replace(mongodb_url, "${prefix}REDACTED:REDACTED$suffix")
@@ -242,29 +227,45 @@ mod tests {
     }
 
     #[test]
+    fn unit_test_url5() {
+        let before = "mongodb://localhost:27017";
+        let after = redact_mongodb_url(before);
+        assert_eq!(after, "mongodb://localhost:27017");
+    }
+
+    #[test]
+    fn unit_test_url6() {
+        let before = "mongodb://aa:bb@localhost:27017";
+        let after = redact_mongodb_url(before);
+        assert_eq!(after, "mongodb://REDACTED:REDACTED@localhost:27017");
+    }
+
+    #[test]
+    fn unit_test_url7() {
+        let before = "mongodb://machine1:27017;machine2:27017";
+        let after = redact_mongodb_url(before);
+        assert_eq!(after, "mongodb://machine1:27017;machine2:27017");
+    }
+
+    #[test]
+    fn unit_test_url8() {
+        let before = "mongodb://aa:bb@machine1:27017;machine2:27017/?x=y";
+        let after = redact_mongodb_url(before);
+        assert_eq!(after, "mongodb://REDACTED:REDACTED@machine1:27017;machine2:27017/?x=y");
+    }
+
+    #[test]
     #[ignore]
     fn integration_test_execute_full_flow() -> Result<(), Box<dyn Error + Send + Sync>> {
         env_logger::init();
         let mongodb_url = get_mongodb_url_from_env_var()?;
-        info!("Integration test using MongoDB deployment: '{}'", redact_mongodb_url(&mongodb_url));
-        let rt = tokio::runtime::Runtime::new().unwrap();
+        let rt = tokio::runtime::Runtime::new().expect("Expected the Tokio runtime");
 
         rt.block_on(async {
-            create_mongodb_client(&mongodb_url).await.unwrap();
-            let result = process_work(
-                &mongodb_url,
-                "Hello from integration test",
-                "integration_test_execute_full_flow",
-                0,
-                0,
-            )
-            .await;
-
-            if let Err(e) = result {
-                panic!("{}", e);
-            }
-        });
-
-        Ok(())
+            create_mongodb_client(&mongodb_url).await.expect("Expected MongoDB client");
+            process_work("Hello from integration test", "integration_test_execute_full_flow", 0, 0)
+                .await
+                .map(|_| ())
+        })
     }
 }

@@ -2,11 +2,11 @@
 
 Provides a demo of an [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/) function written in [Rust](https://doc.rust-lang.org/book/) which uses [MongoDB's Rust Driver](https://docs.mongodb.com/drivers/rust/) to connect to and insert records into a remote [MongoDB database](https://docs.mongodb.com/manual/).
 
-AWS provides [specific language Lambda runtimes](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-images.html) for some programming languages and a [custom Lambda runtime](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-walkthrough.html) for other languages (including Rust). This demo uses an AWS custom runtime based on Amazon Linux 2. AWS provides an [open source runtime API](https://aws.amazon.com/blogs/opensource/rust-runtime-for-aws-lambda/) for Rust: the [aws-lambda-rust-runtime](https://github.com/awslabs/aws-lambda-rust-runtime) crate. This crate manages the instantiation of the deployed Rust Lambda function (deployed as a compiled executable called `bootstrap`), and the subsequent invocation of this Lambda function's core logic (called a handler) for each request/event dispatched to it. It also provides an [API](https://docs.rs/lambda_runtime/latest/lambda_runtime/) for the Lambda's main logic to extract a request payload, query the context it is running in and generate a response each time it is invoked. There's no inherent performance impact when using a custom runtime versus a 'standard' runtime. Indeed, the sorts of programming languages that demand a custom Lambda runtime (e.g. C++, Rust) tend to be more efficient anyway.
+AWS provides [specific language Lambda runtimes](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-images.html) for some programming languages and a [custom Lambda runtime](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-walkthrough.html) for other languages (including Rust). This demo uses an AWS custom runtime based on Amazon Linux 2. AWS provides an [open source runtime API](https://aws.amazon.com/blogs/opensource/rust-runtime-for-aws-lambda/) for Rust: the [aws-lambda-rust-runtime](https://github.com/awslabs/aws-lambda-rust-runtime) crate. This crate manages the instantiation of the deployed Rust Lambda function (deployed as a compiled executable called `bootstrap`), and the subsequent invocation of this Lambda function's core logic (called a handler) for each request/event dispatched to it. It also provides an [API](https://docs.rs/lambda_runtime/latest/lambda_runtime/) for the Lambda function's main logic to extract a request payload, query the context it is running in and generate a response each time it is invoked. There's no inherent performance impact when using a custom runtime versus a 'standard' runtime. Indeed, the sorts of programming languages that demand a custom Lambda runtime (e.g. C++, Rust) tend to be more efficient anyway.
 
-AWS provides a [documented example for deploying a generic Rust Lambda](https://docs.aws.amazon.com/sdk-for-rust/latest/dg/lambda.html). The project here serves a more specific purpose of giving an example for creating and deploying a Rust Lambda to interact with a MongoDB database. Furthermore, whether developing a Lambda to interact with a MongoDB database in Rust or any other programming language, you should ensure you follow [MongoDB's Best Practices Connecting from AWS Lambda](https://docs.atlas.mongodb.com/best-practices-connecting-from-aws-lambda/).
+AWS provides a [documented example for deploying a generic Rust Lambda function](https://docs.aws.amazon.com/sdk-for-rust/latest/dg/lambda.html). The project here serves a more specific purpose of giving an example for creating and deploying a Rust Lambda function to interact with a MongoDB database. Furthermore, whether developing a Lambda function to interact with a MongoDB database in Rust or any other programming language, you should ensure you follow [MongoDB's Best Practices Connecting from AWS Lambda](https://docs.atlas.mongodb.com/best-practices-connecting-from-aws-lambda/).
 
-For a description of what the example Rust Lambda code does, see section [Lambda Rust Code Description](#lambda-rust-code-description) at the base of this page.
+For a description of what the example Rust Lambda function code does, see section [Lambda Rust Code Description](#lambda-rust-code-description) at the base of this page.
 
 
 ## How To Deploy, Test And Monitor
@@ -23,7 +23,7 @@ For a description of what the example Rust Lambda code does, see section [Lambda
     aws lambda list-functions
     ```
 
- 4. Install the latest version of the [Rust development environment](https://www.rust-lang.org/tools/install), if it isn't already installed. _NOTE:_ If building on Microsoft Windows, first ensure you have Microsoft's [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/) installed (and importantly, when running Microsoft's _build tools_ installer, choose the _C++ build tools_ option). Then run the following command from a terminal to install the Rust toolchain for the target OS environment the Lambda will execute in (i.e. x86-64 Linux):
+ 4. Install the latest version of the [Rust development environment](https://www.rust-lang.org/tools/install), if it isn't already installed. _NOTE:_ If building on Microsoft Windows, first ensure you have Microsoft's [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/) installed (and importantly, when running Microsoft's _build tools_ installer, choose the _C++ build tools_ option). Then run the following command from a terminal to install the Rust toolchain for the target OS environment the Lambda function will execute in (i.e. x86-64 Linux):
 
     ```console
     rustup target add x86_64-unknown-linux-gnu
@@ -46,7 +46,7 @@ rm -f mongo-rust-lambda-demo.zip && cp ./target/x86_64-unknown-linux-gnu/release
 
 ### Deployment
 
- * Run the following AWS CLI command to deploy the Lambda zipped executable, first changing the values of the argument for `--role` to match the __role ARN__ you copied in the Prerequisites, and the __MongoDB URL__ part of the`-environment` argument to match the URL of your own MongoDB database including username and password (i.e. replace `mongodb+srv://myuser:mypassword@mycluster.a123z.mongodb.net/`):
+ * Run the following AWS CLI command to deploy the Lambda function zipped executable, first changing the values of the argument for `--role` to match the __role ARN__ you copied in the Prerequisites, and the __MongoDB URL__ part of the`-environment` argument to match the URL of your own MongoDB database including username and password (i.e. replace `mongodb+srv://myuser:mypassword@mycluster.a123z.mongodb.net/`):
 
 ```console
 aws lambda create-function --function-name mongo-rust-lambda-demo \
@@ -69,7 +69,7 @@ aws lambda invoke --function-name mongo-rust-lambda-demo \
   output.json && cat output.json
 ```
 
-&nbsp;&nbsp;&nbsp;&nbsp;_NOTE 1_: The response from the Rust executable includes an `invocation_count` field which shows how many times the specific instance of the Lambda has been invoked (there could be more than one instance when under load). If you run the test command repeatedly in a short space of time, you should see this number increment each time. Suppose you wait more than roughly 15 minutes before invoking the test again. In that case, you will likely see the count reset to _one_ because the AWS Lambda runtime will have destroyed the existing Lambda instance, having been idle, and will have instantiated a new instance upon receiving this later request.
+&nbsp;&nbsp;&nbsp;&nbsp;_NOTE 1_: The response from the Rust executable includes an `invocation_count` field which shows how many times the specific instance of the Lambda function has been invoked (there could be more than one instance when under load). If you run the test command repeatedly in a short space of time, you should see this number increment each time. Suppose you wait more than roughly 15 minutes before invoking the test again. In that case, you will likely see the count reset to _one_ because the AWS Lambda runtime will have destroyed the existing Lambda function instance, having been idle, and will have instantiated a new instance upon receiving this later request.
 
 &nbsp;&nbsp;&nbsp;&nbsp;_NOTE 2_: In [real-world environments](https://docs.aws.amazon.com/lambda/latest/dg/lambda-invocation.html), you wouldn't be using the AWS CLI to invoke your Lambda function, and instead, you might be triggering it synchronously via an HTTP API endpoint or asynchronously via an AWS S3 or SNS event for example.
 
@@ -88,9 +88,9 @@ db.lambdalogs.find()
 
 There are a few options for monitoring your deployed Lambda function, including:
 
- 1. From the [Functions page of the Lambda console](https://console.aws.amazon.com/lambda/home#/functions) you can use the _Monitor_ tab to view when your Lambda was invoked, its output and other statistics.
+ 1. From the [Functions page of the Lambda console](https://console.aws.amazon.com/lambda/home#/functions) you can use the _Monitor_ tab to view when your Lambda function was invoked, its output and other statistics.
  
- 2. Run the following AWS CLI command to _tail_ the emitted log events for the Lambda (then invoke the AWS CLI test again to see logged output):
+ 2. Run the following AWS CLI command to _tail_ the emitted log events for the Lambda function (then invoke the AWS CLI test again to see logged output):
  
 ```console
 aws logs tail /aws/lambda/mongo-rust-lambda-demo --follow
@@ -138,9 +138,9 @@ This project contains a single Rust source file:&nbsp; [main.rs](src/main.rs)
 Notes about the Rust code:
 
  * The two key functions are:
-    * `main()` - The Lambda initialisation code in this demo instantiates a static reference to a new instance of a MongoDB Driver's client for communicating with the remote database (after first reading the database's URL from the environment variable `MONGODB_URL`). Environment variables are the standard Lambda way to provide context metadata to your Lambda code. This metadata was declared when the AWS CLI command `aws lambda create-function` was used earlier. Finally, the main function declares the handler function (see next sub-bullet) to the Lambda runtime.
-    * `handler()` - The Lambda handler code is invoked every time the AWS Lambda receives a request. This uses the AWS Lambda API to read the request JSON payload and some other context data about the Lambda instance. It then invokes some code to insert a log record into a MongoDB database by using the MongoDB Client instantiated earlier in `main()`. Finally, it returns a new JSON payload to the caller.
+    * `main()` - The Lambda function initialisation code in this demo instantiates a static reference to a new instance of a MongoDB Driver's client for communicating with the remote database (after first reading the database's URL from the environment variable `MONGODB_URL`). Environment variables are the standard Lambda way to provide context metadata to your Lambda function code. This metadata was declared when the AWS CLI command `aws lambda create-function` was used earlier. Finally, the main function declares the handler function (see next sub-bullet) to the Lambda runtime.
+    * `handler()` - The Lambda function handler code is invoked every time the AWS Lambda receives a request. This uses the AWS Lambda API to read the request JSON payload and some other context data about the Lambda function instance. It then invokes some code to insert a log record into a MongoDB database by using the MongoDB Client instantiated earlier in `main()`. Finally, it returns a new JSON payload to the caller.
  * The code declares a Rust structure called `DBLogRecord` used in the function `db_insert_record()` to populate with data ready to be inserted into the MongoDB database collection. The call to the MongoDB Driver's `collection.insert_one()` API automatically transforms the data structure into a MongoDB BSON document to be inserted. The driver _transparently_ uses the Rust serialisation/deserialisation library called `serde` to covert the data structure to a BSON document.
- * Most of the logic for this Lambda is delegated to a function named `process_work()` and functions that then calls. This enables the bulk of the code to be executed outside of the Lambda runtime, directly on your workstation, for rapid prototyping. Specifically, the integration test function `integration_test_execute_full_flow()`, near the end of the source file, invokes the `process_work()` function to execute the main logic end-to-end.
+ * Most of the logic for this Lambda function is delegated to a function named `process_work()` and functions that then calls. This enables the bulk of the code to be executed outside of the Lambda runtime, directly on your workstation, for rapid prototyping. Specifically, the integration test function `integration_test_execute_full_flow()`, near the end of the source file, invokes the `process_work()` function to execute the main logic end-to-end.
  * The source file also contains a set of unit tests.
 
