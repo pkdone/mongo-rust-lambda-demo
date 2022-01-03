@@ -126,7 +126,7 @@ fn increment_count_and_fetch() -> usize {
 // Get the already cached mongodb client
 //
 async fn get_mongodb_client() -> Result<&'static Client, Box<dyn Error + Send + Sync>> {
-    MONGODB_CLIENT.get().ok_or_else(|| "MongoDB client as static reference".into())
+    MONGODB_CLIENT.get().ok_or_else(|| "Missing MongoDB client as static reference".into())
 }
 
 // Cache a new mongodb client
