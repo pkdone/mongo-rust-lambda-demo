@@ -35,7 +35,7 @@ For a description of what the example Rust Lambda function code does, see sectio
     * Choose _Next: Tags_, choose _Next: Review_ and for _Role name_, enter a new role name with any value, e.g. "jdoe-lambda-role".
     * Choose _Create role_ and once created __make a copy the ARN for the role__ for use later.
 
-### Executable Compilation
+### Compilation
 
  * From a terminal, in this Github project's root folder, run commands to __1)__ build the project's executable for the target environment, and __2)__ rename the executable to `bootstrap` and bundle it into a zip file ready for deployment (as required by AWS Lambda):
 
