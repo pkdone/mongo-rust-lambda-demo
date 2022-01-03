@@ -58,7 +58,6 @@ async fn main() -> Result<(), LambdaError> {
 //
 async fn handler(event: Value, context: Context) -> Result<Value, LambdaError> {
     let message = event["message"].as_str().unwrap_or("Missing input payload message");
-
     let result =
         process_work(message, &context.request_id, context.env_config.memory, context.deadline)
             .await;
@@ -79,18 +78,16 @@ async fn process_work(
     message: &str, request_id: &str, memory: i32, deadline: u64,
 ) -> Result<Value, Box<dyn Error + Send + Sync>> {
     let mongodb_url = get_mongodb_url_from_env_var()?;
-    let mongodb_client = get_mongodb_client().await?;
     info!(
         "Lambda function executing request against MongoDB deployment: '{}'",
         redact_mongodb_url(&mongodb_url)
     );
-
+    let mongodb_client = get_mongodb_client().await?;
     let invocation_count = increment_count_and_fetch();
     let cpu_cores = run_os_cmd("nproc", &["--all"])?.parse::<i32>()?;
     let coll = mongodb_client.database(DBNAME).collection(COLLNAME);
     db_insert_record(&coll, invocation_count, message, request_id, cpu_cores, memory, deadline)
         .await?;
-
     Ok(json!(
         {
             "mongodb_url": mongodb_url,
@@ -116,7 +113,6 @@ async fn db_insert_record(
         allocated_memory: Some(memory),
         execution_deadline_millis: Some(deadline),
     };
-
     coll.insert_one(record, None).await?;
     Ok(())
 }
