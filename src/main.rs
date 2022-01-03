@@ -82,7 +82,7 @@ async fn process_work(
         "Lambda function executing request against MongoDB deployment: '{}'",
         redact_mongodb_url(&mongodb_url)
     );
-    let mongodb_client = get_mongodb_client().await?;
+    let mongodb_client = get_mongodb_client()?;
     let invocation_count = increment_count_and_fetch();
     let cpu_cores = run_os_cmd("nproc", &["--all"])?.parse::<i32>()?;
     let coll = mongodb_client.database(DBNAME).collection(COLLNAME);
@@ -125,7 +125,7 @@ fn increment_count_and_fetch() -> usize {
 
 // Get the already cached mongodb client
 //
-async fn get_mongodb_client() -> Result<&'static Client, Box<dyn Error + Send + Sync>> {
+fn get_mongodb_client() -> Result<&'static Client, Box<dyn Error + Send + Sync>> {
     MONGODB_CLIENT.get().ok_or_else(|| "Missing MongoDB client as static reference".into())
 }
 
